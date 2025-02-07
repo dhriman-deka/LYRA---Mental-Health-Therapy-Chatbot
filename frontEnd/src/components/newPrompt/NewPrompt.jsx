@@ -11,6 +11,7 @@ const NewPrompt = ({ data }) => {
   const formRef = useRef(null);
 
   const systemInstruction =
+    
     "You are a specialized digital mental health support assistant. " +
     "Your sole purpose is to offer evidence-based, compassionate guidance on mental health and emotional wellbeing. " +
     "You MUST respond ONLY to mental health–related queries. If a user asks for non–mental health assistance (e.g., coding, math, or other general queries), you MUST reply: 'I'm sorry, but I can only assist with mental health and emotional wellbeing topics. Could we focus on your feelings or concerns?'\n\n" +
@@ -73,7 +74,7 @@ const NewPrompt = ({ data }) => {
           role,
           parts: [{ text: parts[0].text }]
         })) || [],
-        generationConfig: { maxOutputTokens: 150 }
+        generationConfig: { maxOutputTokens: 1000 }
       });
 
       const combinedText = systemInstruction + "\n\n" + text;

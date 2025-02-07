@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton, useClerk, ClerkProvider } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./RootLayout.css";
+import "./rootLayout.css";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
