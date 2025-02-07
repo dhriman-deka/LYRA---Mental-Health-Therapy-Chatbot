@@ -1,0 +1,238 @@
+.signUpPage {
+  /* Enhanced Layout */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1rem, 5vw, 2rem);
+
+  /* Premium Background */
+  background-color: var(--bg-primary);
+  background-image: 
+    linear-gradient(120deg, 
+      rgba(26, 54, 93, 0.03) 0%,
+      rgba(196, 167, 119, 0.03) 100%
+    );
+
+  /* Animated Background Elements */
+  .background-shapes {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.06;
+      animation: shapeFloat 20s infinite ease-in-out;
+
+      &:nth-child(1) {
+        top: -10%;
+        right: -5%;
+        width: 400px;
+        height: 400px;
+        background: var(--accent);
+        animation-delay: 0s;
+      }
+
+      &:nth-child(2) {
+        bottom: -15%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        background: var(--primary);
+        animation-delay: -5s;
+      }
+
+      &:nth-child(3) {
+        top: 40%;
+        right: 25%;
+        width: 300px;
+        height: 300px;
+        background: var(--accent);
+        opacity: 0.04;
+        animation-delay: -10s;
+      }
+    }
+  }
+
+  /* Grid Pattern */
+  .grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, var(--border-light) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border-light) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.03;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+  }
+
+  /* Content Container */
+  .content-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: clamp(2rem, 5vw, 3rem);
+    box-shadow: 
+      0 4px 6px -1px rgba(15, 23, 42, 0.05),
+      0 2px 4px -2px rgba(15, 23, 42, 0.05),
+      0 0 0 1px rgba(226, 232, 240, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 8px 16px -1px rgba(15, 23, 42, 0.08),
+        0 4px 8px -2px rgba(15, 23, 42, 0.05),
+        0 0 0 1px rgba(226, 232, 240, 0.8);
+    }
+
+    /* Inner Border Effect */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: 23px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      pointer-events: none;
+    }
+  }
+}
+
+/* Animations */
+@keyframes shapeFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(10px, 10px) rotate(2deg);
+  }
+  50% {
+    transform: translate(-5px, 15px) rotate(-1deg);
+  }
+  75% {
+    transform: translate(-15px, -5px) rotate(1deg);
+  }
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+  .signUpPage {
+    .content-wrapper {
+      margin: var(--space-4);
+      padding: var(--space-6);
+    }
+
+    .background-shapes .shape {
+      opacity: 0.04;
+    }
+  }
+}
+
+/* Enhanced Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .signUpPage {
+    background-color: var(--bg-primary);
+    background-image: 
+      linear-gradient(120deg, 
+        rgba(26, 54, 93, 0.1) 0%,
+        rgba(196, 167, 119, 0.1) 100%
+      );
+
+    .content-wrapper {
+      background: rgba(30, 41, 59, 0.9);
+      box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.2),
+        0 2px 4px -2px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(226, 232, 240, 0.1);
+
+      &:hover {
+        box-shadow: 
+          0 8px 16px -1px rgba(0, 0, 0, 0.3),
+          0 4px 8px -2px rgba(0, 0, 0, 0.2),
+          0 0 0 1px rgba(226, 232, 240, 0.1);
+      }
+
+      &::before {
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .background-shapes .shape {
+      opacity: 0.08;
+    }
+  }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .signUpPage {
+    .background-shapes .shape {
+      animation: none;
+    }
+
+    .content-wrapper {
+      transition: none;
+      transform: none;
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .signUpPage {
+    background-image: none;
+    
+    .background-shapes,
+    .grid-pattern {
+      display: none;
+    }
+
+    .content-wrapper {
+      background: var(--bg-primary);
+      border: 2px solid currentColor;
+      box-shadow: none;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+/* Print Optimization */
+@media print {
+  .signUpPage {
+    height: auto;
+    padding: var(--space-4);
+    background: none;
+
+    .background-shapes,
+    .grid-pattern {
+      display: none;
+    }
+
+    .content-wrapper {
+      box-shadow: none;
+      background: none;
+      border: 1px solid #000;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+/* newPrompt.css */
+.endChat {
+  padding-bottom: var(--space-6);
+}
+
+.newForm {
+  /* Layout */
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  
+  /* Styling */
+  background-color: var(--bg-primary);
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-4);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(244, 162, 97, 0.08);
+
+  /* Input Field */
+  input {
+    flex: 1;
+    padding: var(--space-4);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-primary);
+
+    &::placeholder {
+      color: var(--text-secondary);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  /* Submit Button */
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
+    border: none;
+    border-radius: 50%;
+    background-color: var(--action);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background-color: var(--action-hover);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    img {
+      width: var(--space-4);
+      height: var(--space-4);
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .newForm {
+    width: 90%;
+    margin: 0 auto var(--space-4);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .newForm button {
+    transition: none;
+    transform: none;
+
+    &:hover, &:active {
+      transform: none;
+    }
+  }
+}
+
+/* Dark Mode Support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .newForm {
+    background-color: var(--bg-secondary);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}
