@@ -1,0 +1,42 @@
+services:
+  # Backend API service
+  - type: web
+    name: postr-backend
+    env: node
+    rootDir: backEnd
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGO
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLIENT_URL
+        fromService:
+          name: postr-frontend
+          type: web
+          property: url
+
+  # Frontend static site
+  - type: web
+    name: postr-frontend
+    env: static
+    rootDir: frontEnd
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: postr-backend
+          type: web
+          property: url
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: VITE_GEMINI_PUBLIC_KEY
+        sync: false 
