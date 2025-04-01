@@ -49,4 +49,10 @@ This project is set up for easy deployment to Render with a render.yaml configur
 2. Create .env files in both frontEnd and backEnd directories based on the .env.example files
 3. Run `npm install` in both directories
 4. Start the backend with `npm start` in the backEnd directory
-5. Start the frontend with `npm run dev` in the frontEnd directory 
+5. Start the frontend with `npm run dev` in the frontEnd directory
+
+## Author
+Dhriman Deka
+
+## Overview
+This project aims to build a predictive model for flight ticket prices to help travelers make informed booking decisions. Using historical flight data and machine learning algorithms, we can forecast price trends and provide valuable insights to users planning their travels. 

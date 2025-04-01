@@ -6,11 +6,14 @@ services:
     rootDir: backEnd
     buildCommand: npm install
     startCommand: node index.js
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
+      - key: NODE_VERSION
+        value: 18
       - key: MONGO
         sync: false
       - key: CLERK_PUBLISHABLE_KEY
@@ -28,8 +31,13 @@ services:
     name: postr-frontend
     env: static
     rootDir: frontEnd
-    buildCommand: npm install && npm run build
+    buildCommand: ./build.sh
     staticPublishPath: ./build
+    nodeVersion: 18
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         fromService:

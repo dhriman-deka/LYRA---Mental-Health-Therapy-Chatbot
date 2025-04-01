@@ -19,27 +19,52 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(
-  cors({
-    origin: clientURL,
-    credentials: true,
-  })
-);
+// Configure CORS based on environment
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? clientURL  // In production, only allow the specified client URL
+    : '*',       // In development, allow all origins
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
+// Health check endpoint for Render
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 const connect = async () => {
   try {
-    await mongoose.connect(process.env.MONGO);
+    const mongoURI = process.env.MONGO;
+    
+    if (!mongoURI) {
+      console.error("MongoDB connection string not found in environment variables");
+      process.exit(1);
+    }
+    
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000, // Keep trying to connect for 5 seconds
+      maxPoolSize: 10 // Maintain up to 10 socket connections
+    });
+    
     console.log("Connected to MongoDB");
   } catch (err) {
-    console.log(err);
+    console.error("MongoDB connection error:", err);
+    // Don't exit immediately, as Render might retry
+    throw err;
   }
 };
 
 app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
   const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ error: "Text is required" });
+  }
 
   try {
     // CREATE A NEW CHAT
@@ -81,10 +106,10 @@ app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
       );
     }
 
-    res.status(201).send(newChat._id);
+    res.status(201).json(savedChat._id);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error creating chat!");
+    console.error("Error creating chat:", err);
+    res.status(500).json({ error: "Error creating chat" });
   }
 });
 
@@ -93,10 +118,15 @@ app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
 
   try {
     const userChats = await UserChats.find({ userId });
-    res.status(200).send(userChats[0].chats);
+    
+    if (!userChats || userChats.length === 0) {
+      return res.status(200).json([]);
+    }
+    
+    res.status(200).json(userChats[0].chats);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error fetching userchats!");
+    console.error("Error fetching userchats:", err);
+    res.status(500).json({ error: "Error fetching userchats" });
   }
 });
 
@@ -105,10 +135,15 @@ app.get("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
 
   try {
     const chat = await Chat.findOne({ _id: req.params.id, userId });
-    res.status(200).send(chat);
+    
+    if (!chat) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+    
+    res.status(200).json(chat);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error fetching chat!");
+    console.error("Error fetching chat:", err);
+    res.status(500).json({ error: "Error fetching chat" });
   }
 });
 
@@ -116,13 +151,17 @@ app.put("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
   const { question, answer } = req.body;
 
+  if (!answer) {
+    return res.status(400).json({ error: "Answer is required" });
+  }
+
   const newItems = [
     ...(question ? [{ role: "user", parts: [{ text: question }] }] : []),
     { role: "model", parts: [{ text: answer }] },
   ];
 
   try {
-    const updatedChat = await Chat.updateOne(
+    const result = await Chat.updateOne(
       { _id: req.params.id, userId },
       {
         $push: {
@@ -132,38 +171,83 @@ app.put("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
         },
       }
     );
-    res.status(200).send(updatedChat);
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+    
+    res.status(200).json({ success: true });
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error adding conversation!");
+    console.error("Error updating chat:", err);
+    res.status(500).json({ error: "Error updating chat" });
   }
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(401).send("Unauthenticated!");
+  console.error("Unhandled error:", err);
+  res.status(err.status || 500).json({
+    error: process.env.NODE_ENV === 'production' 
+      ? "Internal server error" 
+      : err.message || "Something went wrong"
+  });
 });
 
-// In production (like on Render), we can serve static files if needed
+// In production (like on Render), setup differs based on deployment type
 if (process.env.NODE_ENV === "production") {
-  // Change path to match Render's structure if deploying frontend together
-  // If deploying separately, this can be removed
-  const staticPath = path.join(__dirname, "../frontEnd/build");
-  app.use(express.static(staticPath));
-  
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
-  });
+  // Check if RENDER environment variable is set (Render sets this automatically)
+  if (process.env.RENDER) {
+    // On Render, frontend and backend are separate services
+    // Only setup API routes, no static file serving needed
+    console.log("Running on Render with separate frontend service");
+  } else {
+    // For other production environments (e.g., local Docker), serve static files
+    const staticPath = path.join(__dirname, "../build");
+    app.use(express.static(staticPath));
+    
+    app.get("*", (req, res) => {
+      // Only serve HTML for non-API routes
+      if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(staticPath, "index.html"));
+      }
+    });
+  }
 }
 
 // Connect to database when server starts
 connect()
   .then(() => {
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Server running on port ${port}`);
     });
+
+    // Handle graceful shutdown
+    const gracefulShutdown = (signal) => {
+      console.log(`${signal} signal received: closing HTTP server`);
+      server.close(() => {
+        console.log('HTTP server closed');
+        // Close MongoDB connection
+        mongoose.connection.close(false)
+          .then(() => {
+            console.log('MongoDB connection closed');
+            process.exit(0);
+          })
+          .catch(err => {
+            console.error('Error closing MongoDB connection', err);
+            process.exit(1);
+          });
+      });
+    };
+
+    // Listen for termination signals
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
   })
   .catch(err => {
     console.error("Failed to connect to MongoDB:", err);
-    process.exit(1); // Exit with error code so Render will retry
+    // Exit with error code so Render will retry, but wait a moment
+    // to prevent immediate restarts causing a restart loop
+    setTimeout(() => {
+      process.exit(1);
+    }, 3000);
   });
