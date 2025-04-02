@@ -33,7 +33,6 @@ services:
     rootDir: frontEnd
     buildCommand: ./build.sh
     staticPublishPath: ./build
-    nodeVersion: 18
     routes:
       - type: rewrite
         source: /*
