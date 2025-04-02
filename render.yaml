@@ -30,7 +30,6 @@ services:
   # Frontend static site
   - type: web
     name: postr-frontend
-    plan: free
     env: static
     rootDir: frontEnd
     buildCommand: ./build.sh
