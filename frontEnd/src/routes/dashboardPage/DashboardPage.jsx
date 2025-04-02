@@ -2,6 +2,7 @@ import "./dashboardPage.css";
 import { useAuth } from "@clerk/clerk-react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { apiEndpoint } from "../../utils/api";
 
 const DashboardPage = () => {
   const { userId } = useAuth();
@@ -10,13 +11,13 @@ const DashboardPage = () => {
 
   const mutation = useMutation({
     mutationFn: async (text) => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
+      const response = await fetch(apiEndpoint("api/chats"), {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${useAuth().getToken()}`,
         },
-        body: JSON.stringify({ userId, text }),
+        body: JSON.stringify({ text }),
       });
 
       if (!response.ok) {

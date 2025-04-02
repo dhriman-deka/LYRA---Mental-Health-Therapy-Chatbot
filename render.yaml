@@ -24,7 +24,7 @@ services:
         fromService:
           name: postr-frontend
           type: web
-          property: url
+          property: host
 
   # Frontend static site
   - type: web
@@ -42,7 +42,7 @@ services:
         fromService:
           name: postr-backend
           type: web
-          property: url
+          property: host
       - key: VITE_CLERK_PUBLISHABLE_KEY
         sync: false
       - key: VITE_GEMINI_PUBLIC_KEY

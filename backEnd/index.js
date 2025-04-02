@@ -13,7 +13,13 @@ dotenv.config();
 // Get port from environment or use fallback
 const port = process.env.PORT || 3000;
 // Get client URL from environment or use fallback for local development
-const clientURL = process.env.CLIENT_URL || "http://localhost:5173";
+let clientURL = process.env.CLIENT_URL || "http://localhost:5173";
+
+// If CLIENT_URL doesn't have a protocol, add https://
+if (clientURL && !clientURL.startsWith('http')) {
+  clientURL = `https://${clientURL}`;
+}
+
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);

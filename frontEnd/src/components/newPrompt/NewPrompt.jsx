@@ -3,12 +3,15 @@ import "./newPrompt.css";
 import model from "../../lib/openRouter";
 import Markdown from "react-markdown";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiEndpoint } from "../../utils/api";
+import { auth } from "../../utils/auth";
 
 const NewPrompt = ({ data }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const endRef = useRef(null);
   const formRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const systemInstruction =
     
@@ -35,11 +38,11 @@ const NewPrompt = ({ data }) => {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
+      const response = await fetch(apiEndpoint(`api/chats/${data._id}`), {
         method: "PUT",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.getToken()}`,
         },
         body: JSON.stringify({
           question: question.length ? question : undefined,

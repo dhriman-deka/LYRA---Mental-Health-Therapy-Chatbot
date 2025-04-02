@@ -3,6 +3,8 @@ import NewPrompt from "../../components/newPrompt/NewPrompt";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import Markdown from "react-markdown";
+import { apiEndpoint } from "../../utils/api";
+import { auth } from "../../utils/auth";
 
 const ChatPage = () => {
   const path = useLocation().pathname;
@@ -12,9 +14,11 @@ const ChatPage = () => {
     queryKey: ["chat", chatId],
     queryFn: async () => {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/chats/${chatId}`,
+        apiEndpoint(`api/chats/${chatId}`),
         {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${auth.getToken()}`,
+          },
         }
       );
       if (!response.ok) {
