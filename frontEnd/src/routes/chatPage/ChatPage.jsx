@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import Markdown from "react-markdown";
 import { apiEndpoint } from "../../utils/api";
-import { auth } from "../../utils/auth";
+import { useAuth } from "@clerk/clerk-react";
 
 const ChatPage = () => {
   const path = useLocation().pathname;
@@ -17,7 +17,7 @@ const ChatPage = () => {
         apiEndpoint(`api/chats/${chatId}`),
         {
           headers: {
-            Authorization: `Bearer ${auth.getToken()}`,
+            Authorization: `Bearer ${useAuth().getToken()}`,
           },
         }
       );

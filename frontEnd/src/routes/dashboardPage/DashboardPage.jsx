@@ -1,13 +1,17 @@
 import "./dashboardPage.css";
+import { useState } from "react";
+import NewPrompt from "../../components/newPrompt/NewPrompt";
+import ChatList from "../../components/chatList/ChatList";
 import { useAuth } from "@clerk/clerk-react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { apiEndpoint } from "../../utils/api";
 
 const DashboardPage = () => {
-  const { userId } = useAuth();
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+  const auth = useAuth();
 
   const mutation = useMutation({
     mutationFn: async (text) => {
@@ -15,39 +19,35 @@ const DashboardPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${useAuth().getToken()}`,
+          Authorization: `Bearer ${auth.getToken()}`,
         },
         body: JSON.stringify({ text }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create chat');
+        throw new Error("Something went wrong");
       }
 
       return response.json();
     },
-    onSuccess: (id) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries(["userChats"]);
-      navigate(`/dashboard/chats/${id}`);
+      navigate(`/dashboard/chats/${data}`);
     },
-    onError: (error) => {
-      console.error("Failed to create chat:", error);
-    }
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const text = e.target.text.value.trim();
-    if (!text || !userId) return;
-    
+  const sendMessage = async (text) => {
     try {
-      mutation.mutate(text);
-    } catch (error) {
-      console.error("Error submitting:", error);
+      setLoading(true);
+      await mutation.mutateAsync(text);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!userId) {
+  if (!auth.userId) {
     return (
       <div className="dashboardPage">
         <div className="auth-required">
@@ -99,12 +99,12 @@ const DashboardPage = () => {
             name="text" 
             placeholder="Share what's on your mind... I'm here to listen"
             aria-label="Chat input"
-            disabled={mutation.isPending}
+            disabled={loading}
           />
           <button 
             type="submit" 
             aria-label="Send message"
-            disabled={mutation.isPending}
+            disabled={loading}
           >
             <img src="/arrow.png" alt="Send" />
           </button>

@@ -4,11 +4,15 @@ import model from "../../lib/openRouter";
 import Markdown from "react-markdown";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiEndpoint } from "../../utils/api";
-import { auth } from "../../utils/auth";
+import { useAuth } from "@clerk/clerk-react";
 
 const NewPrompt = ({ data }) => {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [generatedResponse, setGeneratedResponse] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
+  
+  const queryClient = useQueryClient();
   const endRef = useRef(null);
   const formRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -32,9 +36,7 @@ const NewPrompt = ({ data }) => {
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [data, question, answer]);
-
-  const queryClient = useQueryClient();
+  }, [data, question, generatedResponse]);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -46,7 +48,7 @@ const NewPrompt = ({ data }) => {
         },
         body: JSON.stringify({
           question: question.length ? question : undefined,
-          answer,
+          answer: generatedResponse,
         }),
       });
 
@@ -60,11 +62,11 @@ const NewPrompt = ({ data }) => {
       queryClient.invalidateQueries(["chat", data._id]);
       formRef.current.reset();
       setQuestion("");
-      setAnswer("");
+      setGeneratedResponse("");
     },
     onError: (error) => {
       console.error("Mutation error:", error);
-      setAnswer("I apologize, but I'm having trouble saving our conversation. Please try again.");
+      setGeneratedResponse("I apologize, but I'm having trouble saving our conversation. Please try again.");
     }
   });
 
@@ -87,13 +89,13 @@ const NewPrompt = ({ data }) => {
       for await (const chunk of result.stream) {
         const chunkText = chunk.text();
         accumulatedText += chunkText;
-        setAnswer(accumulatedText);
+        setGeneratedResponse(accumulatedText);
       }
 
       await mutation.mutateAsync();
     } catch (error) {
       console.error("Error generating response:", error);
-      setAnswer("I apologize, but I'm having trouble responding right now. Please try again.");
+      setGeneratedResponse("I apologize, but I'm having trouble responding right now. Please try again.");
     }
   };
 
@@ -116,9 +118,9 @@ const NewPrompt = ({ data }) => {
   return (
     <div className="chat-container">
       {question && <div className="message user">{question}</div>}
-      {answer && (
+      {generatedResponse && (
         <div className="message">
-          <Markdown>{answer}</Markdown>
+          <Markdown>{generatedResponse}</Markdown>
         </div>
       )}
       <div className="endChat" ref={endRef}></div>
