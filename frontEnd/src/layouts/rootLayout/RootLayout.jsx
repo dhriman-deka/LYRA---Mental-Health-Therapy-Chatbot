@@ -5,7 +5,10 @@ import "./RootLayout.css";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-console.log("Clerk Key:", PUBLISHABLE_KEY ? "Found key" : "Missing key");
+// Add more detailed debug information
+console.log("Clerk Key:", PUBLISHABLE_KEY ? `Found key: ${PUBLISHABLE_KEY.substring(0, 10)}...` : "Missing key");
+console.log("Environment:", import.meta.env.MODE);
+console.log("API URL:", import.meta.env.VITE_API_URL || "Not set");
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
@@ -53,13 +56,22 @@ const RootLayoutContent = () => {
       <main>
         <Outlet />
       </main>
+      {/* Add a debug footer in development mode */}
+      {import.meta.env.DEV && (
+        <div style={{ position: 'fixed', bottom: 0, right: 0, background: '#f0f0f0', padding: '5px', fontSize: '12px' }}>
+          Debug: Auth enabled
+        </div>
+      )}
     </div>
   );
 };
 
 const RootLayout = () => {
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+    <ClerkProvider 
+      publishableKey={PUBLISHABLE_KEY} 
+      afterSignOutUrl="/"
+    >
       <QueryClientProvider client={queryClient}>
         <RootLayoutContent />
       </QueryClientProvider>

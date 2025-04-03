@@ -99,27 +99,27 @@
 }
 
 /* Clerk component customization */
-.signInPage :global(.cl-card) {
+.signInPage .cl-card {
   border-radius: 12px !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
   border: 1px solid var(--border-soft) !important;
   background-color: white !important;
 }
 
-.signInPage :global(.cl-headerTitle) {
+.signInPage .cl-headerTitle {
   color: var(--primary) !important;
   font-size: 1.5rem !important;
 }
 
-.signInPage :global(.cl-button-primary) {
+.signInPage .cl-button-primary {
   background-color: var(--action) !important;
 }
 
-.signInPage :global(.cl-button-primary:hover) {
+.signInPage .cl-button-primary:hover {
   background-color: var(--action-hover) !important;
 }
 
-.signInPage :global(.cl-socialButtonsIconButton) {
+.signInPage .cl-socialButtonsIconButton {
   border-color: var(--border-soft) !important;
 }
 
