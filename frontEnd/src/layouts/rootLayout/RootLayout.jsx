@@ -69,8 +69,9 @@ const RootLayoutContent = () => {
 const RootLayout = () => {
   return (
     <ClerkProvider 
-      publishableKey={PUBLISHABLE_KEY} 
+      publishableKey={PUBLISHABLE_KEY}
       afterSignOutUrl="/"
+      domain="clerk.io"
     >
       <QueryClientProvider client={queryClient}>
         <RootLayoutContent />
