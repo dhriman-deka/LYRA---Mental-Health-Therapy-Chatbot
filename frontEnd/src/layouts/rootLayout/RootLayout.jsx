@@ -5,6 +5,8 @@ import "./RootLayout.css";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
+console.log("Clerk Key:", PUBLISHABLE_KEY ? "Found key" : "Missing key");
+
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
 }

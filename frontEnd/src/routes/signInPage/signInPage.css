@@ -2,11 +2,14 @@
   /* Enhanced Layout */
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  padding: var(--space-6);
+  padding: 2rem 1rem;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(244,162,97,0.1) 0%, rgba(254,244,230,0.2) 100%);
 
   /* Premium Background */
   background-color: var(--bg-primary);
@@ -87,6 +90,37 @@
         0 0 0 1px rgba(226, 232, 240, 0.8);
     }
   }
+}
+
+.signInPage h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: var(--primary);
+}
+
+/* Clerk component customization */
+.signInPage :global(.cl-card) {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border-soft) !important;
+  background-color: white !important;
+}
+
+.signInPage :global(.cl-headerTitle) {
+  color: var(--primary) !important;
+  font-size: 1.5rem !important;
+}
+
+.signInPage :global(.cl-button-primary) {
+  background-color: var(--action) !important;
+}
+
+.signInPage :global(.cl-button-primary:hover) {
+  background-color: var(--action-hover) !important;
+}
+
+.signInPage :global(.cl-socialButtonsIconButton) {
+  border-color: var(--border-soft) !important;
 }
 
 /* Animations */

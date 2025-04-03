@@ -40,7 +40,7 @@ const Homepage = () => {
               <span>Judgment-Free Space</span>
             </div>
           </div>
-          <Link to="/dashboard" className="cta-button">
+          <Link to="/sign-in" className="cta-button">
             Begin Your Journey
           </Link>
         </div>
